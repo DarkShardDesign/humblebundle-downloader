@@ -2,6 +2,7 @@
   "name": "humblebundle-downloader",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Download DRM-free files from your Humble Bundle library",
   "homepage": "https://github.com/darksharddesign/humblebundle-downloader",
   "author": "darksharddesign",

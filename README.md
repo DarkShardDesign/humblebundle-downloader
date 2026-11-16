@@ -110,6 +110,8 @@ In dev, verbose library scan logs can go to `~/.cache/humble-library-debug/` whe
 
 ---
 
-## Legal
+## License
+
+**MIT** — use, modify, and redistribute freely. See [LICENSE](LICENSE). The software is provided **as-is, at your own risk**; there is no warranty.
 
 Unofficial tool, not affiliated with Humble Bundle. Use only to download content you are entitled to. Respect Humble’s terms of service and rate limits.
