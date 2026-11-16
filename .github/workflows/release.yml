@@ -43,11 +43,15 @@ jobs:
       - name: Package desktop app
         run: npx electron-builder ${{ matrix.command }} --publish never
 
+      # Only installers — not release/*-unpacked/ (hundreds of Electron locale .pak files).
+      - name: Collect distributables
+        run: node scripts/collect-release-artifacts.mjs
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: humble-library-${{ matrix.os }}
-          path: release/*
+          path: release-upload/*
           if-no-files-found: error
 
   github-release:
@@ -63,7 +67,12 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist-artifacts/**/*
+          files: |
+            dist-artifacts/**/*.AppImage
+            dist-artifacts/**/*.deb
+            dist-artifacts/**/*.exe
+            dist-artifacts/**/*.dmg
+            dist-artifacts/**/*.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
