@@ -2,25 +2,89 @@
   "name": "humblebundle-downloader",
   "version": "0.1.0",
   "private": true,
+  "description": "Download DRM-free files from your Humble Bundle library",
+  "homepage": "https://github.com/darksharddesign/humblebundle-downloader",
+  "author": "darksharddesign",
+  "main": "electron-dist/main.js",
   "scripts": {
-    "dev": "next dev",
+    "dev:kill-port": "sh -c 'fuser -k 3456/tcp 2>/dev/null || true'",
+    "dev": "npm run dev:kill-port && concurrently \"npm:dev:next\" \"npm:dev:electron\"",
+    "dev:next": "next dev -p 3456",
+    "dev:electron": "wait-on tcp:3456 && npm run compile:electron && env HUMBLE_DEBUG_LIBRARY=verbose ELECTRON_DEV_SERVER_URL=http://localhost:3456 electron .",
+    "compile:electron": "tsc -p tsconfig.electron.json",
     "build": "next build",
+    "pack:prepare": "npm run compile:electron && next build",
+    "dist": "npm run pack:prepare && electron-builder",
+    "dist:linux": "npm run pack:prepare && electron-builder --linux",
+    "dist:win": "npm run pack:prepare && electron-builder --win",
+    "dist:mac": "npm run pack:prepare && electron-builder --mac",
+    "build:desktop": "npm run pack:prepare",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.4.6",
-    "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "cheerio": "^1.2.0"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
+    "@types/cheerio": "^0.22.35",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^10.0.7",
+    "electron": "^45.3.3",
+    "electron-builder": "^26.18.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "tailwindcss": "4.3.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wait-on": "^9.5.1"
+  },
+  "build": {
+    "appId": "design.darkshard.humble-library-downloader",
+    "productName": "Humble Library Downloader",
+    "copyright": "Copyright © contributors",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron-dist/**/*",
+      "out/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "maintainer": "darksharddesign"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.utilities"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.exe"
+    }
   }
 }
